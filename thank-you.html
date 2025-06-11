@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Thank You - RanSan Groups</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body { font-family: Arial; background: #f6f6f6; text-align: center; padding: 2rem; }
+    .box { background: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
+    .notice { margin-top: 1.5rem; font-size: 0.9rem; color: #999; }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const url = new URL(window.location.href);
+      const email = url.searchParams.get("email");
+
+      if (email) {
+        fetch("YOUR_SEND_EMAIL_SCRIPT_URL", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: "email=" + encodeURIComponent(email)
+        })
+        .then(res => res.text())
+        .then(() => {
+          document.querySelector(".notice").innerText = "✅ eBook sent successfully!";
+        })
+        .catch(() => {
+          document.querySelector(".notice").innerText = "❌ Payment succeeded but email failed. Contact support.";
+        });
+      } else {
+        document.querySelector(".notice").innerText = "❌ Email not found. Please contact support.";
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="box">
+    <h1>🎉 Thank You for Your Purchase!</h1>
+    <p>Your eBook has been sent to your email address.</p>
+    <p>If you didn’t receive it, <b>contact sales@ransangroups.in</b></p>
+    <div class="notice">Sending eBook...</div>
+  </div>
+</body>
+</html>

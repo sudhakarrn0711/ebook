@@ -1,0 +1,78 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Get eBook - RanSan Groups</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    body { font-family: Arial; background: #f0f0f0; text-align: center; padding: 2rem; }
+    .form-box { background: white; padding: 2rem; max-width: 400px; margin: auto; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    input, button { width: 100%; padding: 10px; margin-top: 10px; font-size: 1rem; }
+    button { background-color: #9a22f6; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    #loading { margin-top: 10px; font-size: 0.9rem; color: #555; display: none; }
+  </style>
+</head>
+<body>
+  <div class="form-box">
+    <h2>📘 Financial Freedom eBook</h2>
+    <p>Enter your email to receive the eBook after payment.</p>
+    <input type="email" id="email" placeholder="Enter your email" required />
+    <button onclick="startPayment()">Proceed to Payment</button>
+    <p id="warning" style="color: red;"></p>
+    <p id="loading">Please wait, preparing payment...</p>
+  </div>
+
+  <script>
+    function startPayment() {
+      const email = document.getElementById("email").value.trim();
+      const warning = document.getElementById("warning");
+      const loading = document.getElementById("loading");
+
+      warning.textContent = "";
+      loading.style.display = "block";
+
+      if (!email.includes("@")) {
+        loading.style.display = "none";
+        warning.textContent = "Please enter a valid email address.";
+        return;
+      }
+
+      fetch("YOUR_CREATE_ORDER_SCRIPT_URL", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "email=" + encodeURIComponent(email)
+      })
+      .then(res => res.json())
+      .then(data => {
+        loading.style.display = "none";
+        if (data.order_id) {
+          const options = {
+            key: "rzp_test_Y9HtA7gfKcYDXw",
+            amount: 100000,
+            currency: "INR",
+            name: "RanSan Groups",
+            description: "Financial Freedom eBook",
+            order_id: data.order_id,
+            handler: function () {
+              window.location.href = "thank-you.html?email=" + encodeURIComponent(email);
+            },
+            prefill: { email: email },
+            theme: { color: "#9a22f6" }
+          };
+          const rzp = new Razorpay(options);
+          rzp.open();
+        } else {
+          warning.textContent = "Failed to start payment. Try again.";
+        }
+      })
+      .catch(err => {
+        loading.style.display = "none";
+        console.error("Order API error:", err);
+        warning.textContent = "Something went wrong.";
+      });
+    }
+  </script>
+</body>
+</html>
